@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment
+server/.env
+.env
+*.env.local
+
+# Build output
+client/build/
+
+# Logs
+server/logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# React
+client/.env.local
+client/.env.development.local
+client/.env.test.local
+client/.env.production.local
