@@ -3,6 +3,13 @@ const logger = require('./logger');
 const { runBatchPayrollAudit } = require('./aiEngine');
 
 const init = () => {
+  // Skip cron jobs on Vercel (serverless functions can't run persistent processes)
+  if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+    logger.info('[CRON] Serverless environment detected — scheduled jobs disabled.');
+    logger.info('[CRON] Please use Vercel Cron Jobs or an external scheduler for production.');
+    return;
+  }
+
   // Daily at 23:55 — auto-mark remaining attendance as Absent
   cron.schedule('55 23 * * 1-5', async () => {
     logger.info('[CRON] Running end-of-day attendance auto-close...');
