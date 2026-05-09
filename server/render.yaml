@@ -1,0 +1,17 @@
+# render.yaml
+services:
+  - type: web
+    name: unidel-hrms-api
+    env: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_URL
+        value: https://unidel-hrms-pd.vercel.app
