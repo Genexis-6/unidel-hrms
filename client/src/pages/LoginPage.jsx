@@ -89,12 +89,6 @@ export default function LoginPage() {
               {loading ? 'Signing in…' : 'Sign In'}
             </button>
           </form>
-
-          <div style={{ marginTop: 18, padding: 14, background: 'var(--surface2)', borderRadius: 8, fontSize: 12, color: 'var(--text3)' }}>
-            <strong style={{ color: 'var(--text2)' }}>Demo credentials:</strong><br />
-            Admin: admin@unidel.edu.ng / password123<br />
-            Registrar: registry@unidel.edu.ng / password123
-          </div>
         </div>
 
         <p style={{ textAlign: 'center', marginTop: 16, fontSize: 11, color: 'var(--text3)' }}>
