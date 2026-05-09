@@ -1,31 +1,55 @@
 const winston = require('winston');
-const path    = require('path');
+const path = require('path');
 
-const { combine, timestamp, printf, colorize, errors } = winston.format;
+// Force console-only in Vercel/serverless environments
+const isVercel = process.env.VERCEL || false;
+const logDir = isVercel ? '/tmp' : path.join(__dirname, '..', 'logs');
 
-const logFormat = printf(({ level, message, timestamp, stack }) => {
-  return `${timestamp} [${level.toUpperCase()}]: ${stack || message}`;
-});
+const transports = [
+  // Always log to console
+  new winston.transports.Console({
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.simple()
+    ),
+  }),
+];
+
+// Only add file transport in non-Vercel environments
+if (!isVercel) {
+  transports.push(
+    new winston.transports.File({
+      filename: path.join(logDir, 'error.log'),
+      level: 'error',
+      maxsize: 5242880, // 5MB
+      maxFiles: 5,
+    }),
+    new winston.transports.File({
+      filename: path.join(logDir, 'combined.log'),
+      maxsize: 5242880,
+      maxFiles: 5,
+    })
+  );
+}
 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
-  format: combine(
-    timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    errors({ stack: true }),
-    logFormat
+  format: winston.format.combine(
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.errors({ stack: true }),
+    winston.format.json()
   ),
-  transports: [
-    new winston.transports.Console({
-      format: combine(colorize(), timestamp({ format: 'HH:mm:ss' }), logFormat),
-    }),
-    new winston.transports.File({
-      filename: path.join(__dirname, '../logs/error.log'),
-      level: 'error',
-    }),
-    new winston.transports.File({
-      filename: path.join(__dirname, '../logs/combined.log'),
-    }),
-  ],
+  defaultMeta: { service: 'unidel-hrms' },
+  transports,
+  exitOnError: false,
 });
+
+// Create log directory only in non-Vercel environments
+if (!isVercel) {
+  const fs = require('fs');
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+  }
+}
 
 module.exports = logger;
