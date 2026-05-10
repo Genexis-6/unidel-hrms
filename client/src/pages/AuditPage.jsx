@@ -39,7 +39,7 @@ export default function AuditPage() {
       from: from || undefined,
       to:   to   || undefined,
     }).then(r => r.data),
-    keepPreviousData: true,
+    placeholderData: (prev) => prev,
   });
 
   const { data: stats } = useQuery({

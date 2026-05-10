@@ -53,8 +53,10 @@ export const attendanceAPI = {
   getAll:       (params)  => api.get('/attendance', { params }),
   getSummary:   (date)    => api.get('/attendance/summary', { params: { date } }),
   getByStaff:   (id, p)   => api.get(`/attendance/staff/${id}`, { params: p }),
-  getAnomalies: ()        => api.get('/attendance/anomalies'),
+  getAnomalies: (params)  => api.get('/attendance/anomalies', { params }),
   mark:         (records) => api.post('/attendance', records),
+  getClockStats: (date)    => api.get('/attendance/clock-stats', { params: { date } }),
+  getClockHistory:(sid, p) => api.get(`/attendance/staff/${sid}/clock-history`, { params: p }),
 };
 
 // ─── Leave ───────────────────────────────────────────────────────────────────
@@ -112,6 +114,7 @@ export const auditAPI = {
 
 // ─── Clock In/Out ─────────────────────────────────────────────────────────────
 export const clockAPI = {
-  clockIn:  (staffId) => api.post('/attendance/clockin',  { staffId }),
-  clockOut: (staffId) => api.post('/attendance/clockout', { staffId }),
+  clockIn:    (staffId) => api.post('/attendance/clockin',  { staffId }),
+  clockOut:   (staffId) => api.post('/attendance/clockout', { staffId }),
+  getStats:   (params)  => api.get('/attendance/clock-stats', { params }),
 };

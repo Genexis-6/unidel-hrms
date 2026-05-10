@@ -25,7 +25,7 @@ export default function StaffPage() {
   const { data, isLoading } = useQuery({
     queryKey: ['staff', page, search, deptFilter, catFilter],
     queryFn: () => staffAPI.getAll({ page, limit:20, search: search||undefined, department: deptFilter||undefined, category: catFilter||undefined }).then(r => r.data),
-    keepPreviousData: true,
+    placeholderData: (prev) => prev,
   });
 
   const saveMutation = useMutation({

@@ -21,28 +21,52 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30000, retry: 1 } },
 });
 
+function useIsMobile() {
+  const [mobile, setMobile] = React.useState(window.innerWidth < 768);
+  React.useEffect(() => {
+    const h = () => setMobile(window.innerWidth < 768);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+  return mobile;
+}
+
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div className="loading-page"><div className="spinner"/><span>Loading HRMS…</span></div>;
+  if (loading) return (
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:12, color:'var(--text3)', fontFamily:'var(--font)' }}>
+      <div className="spinner" style={{ width:28, height:28 }}/>
+      <span>Loading HRMS…</span>
+    </div>
+  );
   return user ? children : <Navigate to="/login" replace />;
 };
 
-const AppLayout = ({ children }) => (
-  <div className="app-layout">
-    <Sidebar />
-    <div className="main-area">
-      <Topbar />
-      <main className="page-content" style={{ paddingBottom: 80 }}>{children}</main>
+const AppLayout = ({ children }) => {
+  const isMobile = useIsMobile();
+  return (
+    <div className="app-layout">
+      <Sidebar />
+      <div className="main-area" style={{ marginLeft: isMobile ? 0 : 'var(--sidebar-w)' }}>
+        <Topbar />
+        {/* on mobile add paddingTop for fixed header bar */}
+        <main className="page-content" style={{ paddingTop: isMobile ? 70 : 0 }}>
+          {children}
+        </main>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <BrowserRouter>
-          <Toaster position="top-right" toastOptions={{ duration: 3500, style: { fontFamily: 'DM Sans, sans-serif', fontSize: '13px' } }} />
+          <Toaster
+            position="top-right"
+            toastOptions={{ duration: 3500, style: { fontFamily: 'DM Sans, sans-serif', fontSize: '13px' } }}
+          />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/*" element={
